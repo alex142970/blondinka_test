@@ -1,0 +1,75 @@
+version: '3'
+services:
+
+  #PHP Service
+  php_laravel:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: php_laravel
+    tty: true
+    environment:
+      SERVICE_NAME: laravel
+      SERVICE_TAGS: dev
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/php/imagick/policy.xml:/etc/ImageMagick-6/policy.xml
+    depends_on:
+      - mysql
+    ports:
+      - "9000:9000"
+    networks:
+      - app-network
+
+  #Nginx Service
+  nginx_service:
+    image: nginx:alpine
+    container_name: nginx_service
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/conf.d.local/:/etc/nginx/conf.d/
+    depends_on:
+      - php_laravel
+    networks:
+      - app-network
+
+  #MySQL Service
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql-files/
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  #PhpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8189:80"
+    networks:
+      - app-network
+
+
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge

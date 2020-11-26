@@ -1,0 +1,5 @@
+/mysql/data/
+.idea
+/certbot/etc/*
+/certbot/log/*
+/certbot/webroot/*
