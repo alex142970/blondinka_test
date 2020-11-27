@@ -23,4 +23,6 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 Auth::routes();
 
 Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/login_bitrix24', [\App\Http\Controllers\Auth\Bitrix24Controller::class, 'redirect']);
+Route::get('/login_bitrix24_callback', [\App\Http\Controllers\Auth\Bitrix24Controller::class, 'handleCallback']);
 

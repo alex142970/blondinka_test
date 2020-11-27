@@ -3,3 +3,12 @@
 @import "tailwindcss/components";
 
 @import "tailwindcss/utilities";
+
+.table {
+    width: 100%;
+}
+
+.table td {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+}

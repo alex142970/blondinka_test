@@ -18,7 +18,7 @@ class CreateUserProfilesTable extends Migration
             $table->boolean('active')->default(true);
             $table->string('last_name', 100)->nullable();
             $table->string('second_name', 100)->nullable();
-            $table->enum('personal_gender', ['man', 'woman'])->default('man');
+            $table->string('personal_gender')->nullable();
             $table->string('personal_profession', 100)->nullable();
             $table->string('personal_www')->nullable();
             $table->date('personal_birthday')->nullable();

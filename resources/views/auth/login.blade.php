@@ -66,6 +66,10 @@
                             {{ __('Login') }}
                         </button>
 
+                        <a href="/login_bitrix24" class="flex items-center justify-center w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-500 bg-gray-100 hover:bg-blue-100 sm:py-4 mt-3">
+                            Войти через <img src="{{url('/images/bitrix.svg')}}" alt="" style="max-height: 14px; margin-left: 7px;">
+                        </a>
+
                         @if (Route::has('register'))
                         <p class="w-full text-xs text-center text-gray-700 my-6 sm:text-sm sm:my-8">
                             {{ __("Don't have an account?") }}
