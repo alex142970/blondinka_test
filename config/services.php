@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'bitrix24' => [
+        'client_id' => env('BITRIX24_CLIENT_ID'),
+        'client_secret' => env('BITRIX24_CLIENT_SECRET'),
+        'redirect' => getenv('URL') . '/login',
+    ]
+
 ];
