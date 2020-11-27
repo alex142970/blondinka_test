@@ -2,56 +2,49 @@ version: '3'
 services:
 
   #PHP Service
-  laravel:
+  php_laravel:
     build:
-      context: ../api
+      context: .
       dockerfile: ./Dockerfile
-    container_name: laravel
-    restart: unless-stopped
+    container_name: php_laravel
     tty: true
     environment:
       SERVICE_NAME: laravel
       SERVICE_TAGS: dev
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel
     working_dir: /var/www
     volumes:
-      - ../api:/var/www
-      - ../api/server/local.ini:/usr/local/etc/php/conf.d/local.ini
-      - ../api/server/log:/var/log
-      - ../api/server/imagick/policy.xml:/etc/ImageMagick-6/policy.xml
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/php/imagick/policy.xml:/etc/ImageMagick-6/policy.xml
     depends_on:
-      - db
+      - mysql5
     ports:
       - "9000:9000"
     networks:
       - app-network
 
   #Nginx Service
-  webserver:
+  nginx_service:
     image: nginx:alpine
-    container_name: webserver
-    environment:
-      ENV: production
+    container_name: nginx_service
     restart: unless-stopped
     tty: true
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - ../admin/dist:/var/www/admin/
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
-      - ./certbot/web-root/:/data/letsencrypt/
-      - ./certbot/etc/:/etc/letsencrypt/
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
-      - laravel
-      - nuxt
-      - certbot
+      - php_laravel
     networks:
       - app-network
 
   #MySQL Service
-  db:
-    image: mysql:8
-    container_name: db
+  mysql5:
+    image: mysql:5.7
+    container_name: mysql5
     restart: unless-stopped
     tty: true
     environment:
@@ -60,58 +53,9 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - ./mysql/data:/var/lib/mysql/
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/data:/var/lib/mysql-files/
     networks:
       - app-network
-
-  #PhpMyAdmin
-  myadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: myadmin
-    restart: unless-stopped
-    ports:
-      - "8189:80"
-    networks:
-      - app-network
-
-
-  #NUXT.JS
-  nuxt:
-    build:
-      context: ../frontend
-      dockerfile: ./Dockerfile
-    container_name: nuxt
-    command:
-      "npm run start"
-    ports:
-      - "3000:3000"
-    networks:
-      - app-network
-
-
-  #VUE.JS
-  admin:
-    build:
-      context: ../admin
-      dockerfile: ./Dockerfile
-    container_name: admin
-    volumes:
-      - ../admin/dist:/usr/src/app/dist
-    networks:
-      - app-network
-
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/etc:/etc/letsencrypt
-      - ./certbot/var:/var/lib/letsencrypt
-      - ./certbot/web-root:/var/www/html
-      - ./certbot/log:/var/log/letsencrypt
-    command:
-      certonly --webroot --webroot-path=/var/www/html --email admin@prudy.info --agree-tos --no-eff-email -d api.dev.print.prudy.info -d dev.print.prudy.info
 
 
 #Docker Networks
